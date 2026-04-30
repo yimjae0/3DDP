@@ -17,5 +17,5 @@ pretrained/
 *.log
 *.pt
 *.pth
-data/
+/data/
 extensions/pointops/src/lock
