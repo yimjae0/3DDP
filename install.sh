@@ -36,6 +36,18 @@ echo "[4/5] Installing Python packages"
 $RUN pip install scipy scikit-learn tqdm pandas
 $RUN pip install -e .
 
+# 4b. Fix conda linker on Debian/Ubuntu (conda compat ld expects RHEL-style /lib64/)
+echo "[4b] Fixing linker paths for Debian/Ubuntu if needed"
+if [ ! -e /lib64/libpthread.so.0 ] && [ -f /lib/x86_64-linux-gnu/libpthread.so.0 ]; then
+    mkdir -p /lib64
+    ln -sf /lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
+fi
+_nsa=$(find /usr/lib -name "libpthread_nonshared.a" 2>/dev/null | head -1)
+if [ -n "$_nsa" ] && [ ! -e /usr/lib64/libpthread_nonshared.a ]; then
+    mkdir -p /usr/lib64
+    ln -sf "$_nsa" /usr/lib64/libpthread_nonshared.a
+fi
+
 # 5. CUDA extensions
 echo "[5/5] Building CUDA extensions"
 echo "  -> pointops"
