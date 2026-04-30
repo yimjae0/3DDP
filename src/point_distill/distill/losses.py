@@ -1,7 +1,6 @@
 import math
 import torch
 import torch.nn as nn
-from scipy.optimize import linear_sum_assignment
 
 
 # ---------------------------------------------------------------------------
@@ -138,93 +137,3 @@ class M3DLoss_blockwise(nn.Module):
 # Feature matching losses
 # ---------------------------------------------------------------------------
 
-def distance_wb(gwr, gws):
-    """Cosine distance between gradient tensors (used in match_loss)."""
-    shape = gwr.shape
-    if len(shape) == 4:
-        gwr = gwr.reshape(shape[0], -1)
-        gws = gws.reshape(shape[0], -1)
-    elif len(shape) == 3:
-        gwr = gwr.reshape(shape[0], -1)
-        gws = gws.reshape(shape[0], -1)
-    elif len(shape) == 1:
-        gwr = gwr.reshape(1, shape[0])
-        gws = gws.reshape(1, shape[0])
-        return torch.tensor(0, dtype=torch.float, device=gwr.device)
-    dis = torch.sum(
-        1 - torch.sum(gwr * gws, dim=-1) / (torch.norm(gwr, dim=-1) * torch.norm(gws, dim=-1) + 1e-6)
-    )
-    return dis
-
-
-def match_loss(gw_syn, gw_real, args):
-    """Gradient matching loss (ours / mse / cos)."""
-    dis = torch.tensor(0.0).to(args.device)
-    if args.dis_metric == 'ours':
-        for gwr, gws in zip(gw_real, gw_syn):
-            dis += distance_wb(gwr, gws)
-    elif args.dis_metric == 'mse':
-        real_vec = torch.cat([g.reshape(-1) for g in gw_real])
-        syn_vec  = torch.cat([g.reshape(-1) for g in gw_syn])
-        dis = torch.sum((syn_vec - real_vec) ** 2)
-    elif args.dis_metric == 'cos':
-        real_vec = torch.cat([g.reshape(-1) for g in gw_real])
-        syn_vec  = torch.cat([g.reshape(-1) for g in gw_syn])
-        dis = 1 - torch.sum(real_vec * syn_vec) / (
-            torch.norm(real_vec) * torch.norm(syn_vec) + 1e-6
-        )
-    else:
-        raise ValueError(f"unknown dis_metric: {args.dis_metric}")
-    return dis
-
-
-def cosine_similarity_loss(gf, gf_syn):
-    """Row-wise cosine similarity loss between two feature matrices."""
-    gf_n = gf / (gf.norm(dim=-1, keepdim=True) + 1e-8)
-    gf_syn_n = gf_syn / (gf_syn.norm(dim=-1, keepdim=True) + 1e-8)
-    return 1 - (gf_n * gf_syn_n).sum(dim=-1).mean()
-
-
-def cosine_similarity_matrix(gf, gf_syn):
-    """Column-wise cosine distance matrix (used as cost for Hungarian matching)."""
-    gf_n = gf / (gf.norm(dim=0, keepdim=True) + 1e-8)
-    gf_syn_n = gf_syn / (gf_syn.norm(dim=0, keepdim=True) + 1e-8)
-    return 1 - (gf_n * gf_syn_n).sum(dim=0)
-
-
-def optimal_feature_matching(gf, gf_syn):
-    """Reorder gf_syn columns to minimise cosine distance via Hungarian algorithm."""
-    cost = cosine_similarity_matrix(gf, gf_syn).detach().cpu().numpy()
-    _, col_ind = linear_sum_assignment(cost)
-    return gf_syn[col_ind]
-
-
-def pairwise_interpolate_to_length(x, target_length):
-    """Linearly interpolate between adjacent points to reach target_length.
-
-    Args:
-        x: (B, C, N)
-        target_length: int >= N
-    Returns:
-        (B, C, target_length)
-    """
-    B, C, N = x.shape
-    assert target_length >= N
-    num_segments = N - 1
-    total_insert = target_length - N
-    inserts = [total_insert // num_segments] * num_segments
-    for i in range(total_insert % num_segments):
-        inserts[i] += 1
-
-    result = []
-    for i in range(num_segments):
-        p0 = x[:, :, i]
-        p1 = x[:, :, i + 1]
-        result.append(p0.unsqueeze(-1))
-        if inserts[i] > 0:
-            alphas = torch.linspace(1, inserts[i], inserts[i], device=x.device) / (inserts[i] + 1)
-            interp = ((1 - alphas)[None, None, :] * p0[:, :, None]
-                      + alphas[None, None, :] * p1[:, :, None])
-            result.append(interp)
-    result.append(x[:, :, -1].unsqueeze(-1))
-    return torch.cat(result, dim=-1)
