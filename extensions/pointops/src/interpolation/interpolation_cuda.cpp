@@ -3,7 +3,6 @@
 #include <ATen/cuda/CUDAContext.h>
 #include "interpolation_cuda_kernel.h"
 
-extern THCState *state;
 
 void nearestneighbor_cuda(int b, int n, int m, at::Tensor unknown_tensor, at::Tensor known_tensor, at::Tensor dist2_tensor, at::Tensor idx_tensor)
 {
