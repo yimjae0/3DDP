@@ -27,8 +27,9 @@ $RUN pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 \
 #    gcc/gxx : CUDA extension build (avoids old system GCC issue)
 #    h5py    : requires HDF5 lib — conda handles the C dependency
 #    numpy<2 : CUDA extensions compiled against NumPy 1.x API
-echo "[3/5] Installing gcc, h5py, numpy via conda-forge"
-conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 h5py "numpy<2" -y
+echo "[3/5] Installing gcc, h5py, numpy, libxcrypt via conda-forge"
+# libxcrypt: provides crypt.h required by Python 3.8 headers on modern Linux
+conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 h5py "numpy<2" libxcrypt -y
 
 # 4. Python dependencies
 echo "[4/5] Installing Python packages"
