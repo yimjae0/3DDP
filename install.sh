@@ -30,13 +30,11 @@ $RUN pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 \
 # GCC:   시스템 GCC가 오래됐을 때 우회
 # h5py:  HDF5 라이브러리 의존성 → conda로 설치
 # numpy: CUDA 확장이 NumPy 2.x 미지원 → 1.x로 고정
-echo "[3/5] Installing GCC 12, h5py, numpy<2 via conda-forge"
-conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 h5py "numpy<2" -y
+echo "[3/5] Installing GCC 12, h5py, numpy<2, setuptools via conda-forge"
+conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 h5py "numpy<2" setuptools -y
 
 # ---------- 4. Python 의존성 ----------
 echo "[4/5] Installing Python dependencies"
-# setuptools: pkg_resources 제공 (CUDA 확장 빌드에 필요)
-$RUN pip install "setuptools>=42" wheel
 $RUN pip install -r requirements.txt
 $RUN pip install -e .
 
