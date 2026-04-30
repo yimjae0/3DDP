@@ -26,10 +26,11 @@ echo "[2/5] Installing PyTorch 2.1.2 with CUDA 12.1"
 $RUN pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 \
     --index-url https://download.pytorch.org/whl/cu121
 
-# ---------- 3. GCC (CUDA 확장 빌드용) ----------
-# 시스템 GCC가 오래됐을 때 conda-forge에서 설치
-echo "[3/5] Installing GCC 12 via conda-forge (CUDA extension build)"
-conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 -y
+# ---------- 3. GCC + conda 패키지 ----------
+# GCC: 시스템 GCC가 오래됐을 때 우회
+# h5py: HDF5 라이브러리 의존성 때문에 conda로 설치해야 pip 빌드 실패 안 함
+echo "[3/5] Installing GCC 12 and h5py via conda-forge"
+conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 h5py -y
 
 # ---------- 4. Python 의존성 ----------
 echo "[4/5] Installing Python dependencies"
