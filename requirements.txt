@@ -1,7 +1,8 @@
 # PyTorch: install.sh에서 CUDA 버전 맞게 별도 설치
 # h5py:    install.sh에서 conda-forge로 설치 (HDF5 라이브러리 의존성)
 
-numpy
+# numpy<2: CUDA extensions (pointops, emd_) are compiled against NumPy 1.x
+numpy<2
 scipy
 scikit-learn
 tqdm
