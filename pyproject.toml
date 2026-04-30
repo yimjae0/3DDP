@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "point-distill"
+version = "0.1.0"
+description = "Parameterization-Based Dataset Distillation of 3D Point Clouds"
+requires-python = ">=3.8"
+dependencies = [
+    "torch",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "open3d",
+    "h5py",
+    "matplotlib",
+    "seaborn",
+    "pandas",
+    "tqdm",
+]
+
+[tool.setuptools.packages.find]
+where = ["src", "extensions"]
+
+[tool.setuptools.package-dir]
+"" = "src"

@@ -1,0 +1,42 @@
+# Dataset Distillation for 3D Point Clouds
+# Default hyperparameters
+
+# --- Dataset ---
+dataset: MODELNET40        # MODELNET40 | MODELNET10 | scanobjectnn | shapenet | omni
+data_path: /root/dataset
+
+# --- Model ---
+model: PointNet            # PointNet | PointNetPlusPlus | DGCNN | PointConvDensityClsSsg | PointTransformerCls
+feature_transform: 0
+
+# --- Distillation ---
+ipc: 1                     # anchor groups per class (total synthetic = ipc * num_morph)
+num_morph: 4               # morphed samples generated per anchor group (= paper's L per group)
+npoints: 255               # points per sub-cloud chunk (anchor resolution)
+origin_npoints: 1024       # full resolution of real data
+init: real                 # real | noise
+
+# --- Training ---
+Iteration: 2000
+lr_img: 10                 # overridden: 100 for ipc<=10, lr_img*ipc for ipc>10
+lr_net: 0.01
+lr_alpha: 10
+batch_real: 8
+batch_train: 8
+inner_loop: 10
+epoch_eval_train: 500
+
+# --- Loss ---
+layer_label: fReshape_nodup   # fReshape_nodup | fReshape_wo_penalty | DownSample | Topk | Uniform | Interpolate
+uniformity_lambda: 1000       # penalty sharpness in exp(-lambda * delta^2)
+addition_setting: None
+
+# --- Evaluation ---
+eval_mode: S               # S | SS | SSS | CrossArchi
+num_exp: 1
+num_eval: 1
+dis_metric: ours
+
+# --- Misc ---
+save_path: result
+mode: result               # output folder name prefix
