@@ -1,0 +1,10 @@
+# PyTorch는 install.sh에서 CUDA 버전에 맞게 별도 설치
+# (pip install torch --index-url https://download.pytorch.org/whl/cu121)
+
+numpy
+scipy
+scikit-learn
+h5py
+tqdm
+open3d
+pandas
