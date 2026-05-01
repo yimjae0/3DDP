@@ -1,6 +1,6 @@
 #!/bin/bash
 # Setup script for point-distill
-# Requirements: conda, CUDA 12.1 driver
+# Requirements: conda installed, CUDA 12.1 driver
 #
 # Usage: bash install.sh
 
@@ -23,16 +23,16 @@ $RUN pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 \
     --index-url https://download.pytorch.org/whl/cu121
 
 # 3. gcc 12 + h5py + numpy via conda-forge
-#    gcc: system gcc is too old for PyTorch extensions (need >= 9)
-#    h5py: requires HDF5 C lib — conda handles it
-#    numpy<2: CUDA extensions compiled against NumPy 1.x ABI
+#    gcc: system gcc is too old for PyTorch CUDA extensions (need >= 9)
+#    h5py: requires HDF5 C lib — conda handles the binary dependency
+#    numpy<2: CUDA extensions must be compiled and run against NumPy 1.x ABI
 echo "[3/6] Installing gcc=12, h5py, numpy<2 via conda-forge"
 conda install -n $ENV_NAME -c conda-forge gcc=12 gxx=12 h5py "numpy<2" -y
 
 # 4. Fix conda linker compat on Debian/Ubuntu
-#    conda's ld wrapper looks for /lib64/libpthread.so.0 (RHEL path),
-#    but on Debian/Ubuntu it lives in /lib/x86_64-linux-gnu/
-echo "[4/6] Fixing linker paths for Debian/Ubuntu"
+#    conda's ld wrapper looks for /lib64/libpthread.so.0 (RHEL-style path),
+#    but Debian/Ubuntu puts it in /lib/x86_64-linux-gnu/
+echo "[4/6] Fixing linker paths"
 if [ ! -e /lib64/libpthread.so.0 ] && [ -f /lib/x86_64-linux-gnu/libpthread.so.0 ]; then
     mkdir -p /lib64
     ln -sf /lib/x86_64-linux-gnu/libpthread.so.0 /lib64/libpthread.so.0
@@ -44,8 +44,11 @@ if [ -n "$_nsa" ] && [ ! -e /usr/lib64/libpthread_nonshared.a ]; then
 fi
 
 # 5. Python dependencies
+#    Force numpy==1.26.4 last — scipy and other pip packages can silently
+#    upgrade numpy to 2.x, which breaks the CUDA extensions compiled above.
 echo "[5/6] Installing Python packages"
-$RUN pip install scipy scikit-learn tqdm pandas "numpy<2"
+$RUN pip install scipy scikit-learn tqdm pandas
+$RUN pip install "numpy==1.26.4" --force-reinstall
 $RUN pip install -e .
 
 # 6. CUDA extensions
