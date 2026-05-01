@@ -52,7 +52,7 @@ def get_dataset(args, dataset: str, data_path: str, npoints: int = 1024):
 
     num_classes = _NUM_CLASSES[dataset]
     coord_dim = 3
-    batch_size_test = 16 if args.eval_mode == 'CrossArchi' else 128
+    batch_size_test = 128
 
     root = _DATASET_ROOTS[dataset]
 
