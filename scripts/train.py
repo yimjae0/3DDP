@@ -140,11 +140,12 @@ def main():
                         [real_set, get_images(c, args.ipc * args.samples - real_set.shape[0])],
                         dim=0
                     )
-                pc = real_set.permute(0, 2, 1).float()
+                pc = real_set.permute(0, 2, 1).float()  # (B, N, 3)
+                fps_n = syn_npoints // args.samples
                 pc_sampled = index_points(
-                    pc, pointops.furthestsampling(pc.contiguous(), args.npoints).long()
-                )
-                pc_merged = emd_align_and_merge(pc_sampled, args)
+                    pc, pointops.furthestsampling(pc.contiguous(), fps_n).long()
+                )  # (B, fps_n, 3)
+                pc_merged = emd_align_and_merge(pc_sampled, args)  # (ipc, 3, syn_npoints)
                 pointcloud_syn[c * args.ipc:(c + 1) * args.ipc] = pc_merged.detach()
         else:
             logger.info('init from random noise')

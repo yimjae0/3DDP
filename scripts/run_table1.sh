@@ -31,10 +31,10 @@ echo "=========================================="
 echo "Table 1 Reproduction — GPU $GPU"
 echo "=========================================="
 
-# ---------- ModelNet10 (npoints=252, per paper) ----------
+# ---------- ModelNet10 (npoints=252, num_morph=16 per paper) ----------
 for IPC in 1 3 10; do
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] ModelNet10 IPC=$IPC"
-  $CMD --dataset MODELNET10 --ipc $IPC --npoints 252
+  $CMD --dataset MODELNET10 --ipc $IPC --npoints 252 --num_morph 16
 done
 
 # ---------- ModelNet40 ----------

@@ -36,35 +36,33 @@ def emd_align_and_merge(pc_sampled, args):
     """Align chunks via EMD (Hungarian) and concatenate into one tensor per IPC.
 
     Args:
-        pc_sampled: (ipc*samples, 3, npoints)
+        pc_sampled: (ipc*samples, npoints, 3)
     Returns:
         (ipc, 3, samples*npoints)
     """
-    B, C, S = pc_sampled.shape
     ipc = args.ipc
     samples = args.samples
     merged_all = []
 
-    pc_sampled = pc_sampled.permute(0, 2, 1).contiguous()  # (B, npoints, 3)
-
     for i in range(ipc):
         chunks = pc_sampled[i * samples:(i + 1) * samples]  # (samples, npoints, 3)
-        ref = chunks[0].cpu().numpy()
-        aligned = []
 
-        # pad to samples if fewer chunks (e.g. ShapeNet IPC=10 edge case)
+        # pad to samples if fewer chunks
         if chunks.shape[0] < samples:
             repeat_times = math.ceil(samples / chunks.shape[0])
             chunks = chunks.repeat(repeat_times, 1, 1)[:samples]
 
+        ref = chunks[0].cpu().numpy()  # (npoints, 3)
+        aligned = []
+
         for j in range(samples):
-            tgt = chunks[j].cpu().numpy()
-            cost = cdist(ref, tgt)
+            tgt = chunks[j].cpu().numpy()          # (npoints, 3)
+            cost = cdist(ref, tgt)                 # (npoints, npoints)
             _, col_ind = linear_sum_assignment(cost)
-            reordered = tgt[col_ind]
+            reordered = tgt[col_ind]               # (npoints, 3)
             aligned.append(torch.from_numpy(reordered))
 
-        merged = torch.cat(aligned, dim=1).unsqueeze(0)   # (1, samples*npoints, 3)
+        merged = torch.cat(aligned, dim=0).unsqueeze(0)  # (1, samples*npoints, 3)
         merged = merged.permute(0, 2, 1)                  # (1, 3, samples*npoints)
         merged_all.append(merged.to(args.device))
 
