@@ -10,7 +10,7 @@
 GPU=${1:-0}
 export CUDA_VISIBLE_DEVICES=$GPU
 
-CMD="python scripts/train.py \
+CMD="python $(dirname $0)/train.py \
   --model PointNet \
   --init real \
   --Iteration 2000 \
