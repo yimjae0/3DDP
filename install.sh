@@ -47,7 +47,7 @@ fi
 #    Force numpy==1.26.4 last — scipy and other pip packages can silently
 #    upgrade numpy to 2.x, which breaks the CUDA extensions compiled above.
 echo "[5/6] Installing Python packages"
-$RUN pip install scipy scikit-learn tqdm pandas
+$RUN pip install scipy scikit-learn tqdm pandas open3d
 $RUN pip install "numpy==1.26.4" --force-reinstall
 $RUN pip install -e .
 
