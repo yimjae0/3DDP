@@ -10,6 +10,11 @@
 GPU=${1:-0}
 export CUDA_VISIBLE_DEVICES=$GPU
 
+# Make pointops Python package importable (extensions/pointops/ → import pointops)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+export PYTHONPATH="$PROJECT_DIR/extensions:${PYTHONPATH:-}"
+
 CMD="python $(dirname $0)/train.py \
   --model PointNet \
   --init real \
