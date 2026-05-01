@@ -45,7 +45,7 @@ fi
 
 # 5. Python dependencies
 echo "[5/6] Installing Python packages"
-$RUN pip install scipy scikit-learn tqdm pandas
+$RUN pip install scipy scikit-learn tqdm pandas "numpy<2"
 $RUN pip install -e .
 
 # 6. CUDA extensions
