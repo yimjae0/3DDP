@@ -118,19 +118,6 @@ point-distill/
 
 Pass via `--model`.
 
----
-
-## Results (Table 1, PointNet)
-
-| Dataset | IPC=1 | IPC=3 | IPC=10 |
-|---|---|---|---|
-| ModelNet10 | — | — | — |
-| ModelNet40 | — | — | — |
-| ScanObjectNN | — | — | — |
-| ShapeNet | — | — | — |
-| OmniObject3D | — | — | — |
-
-*(Fill in after running `bash scripts/run_table1.sh`.)*
 
 ---
 
