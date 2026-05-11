@@ -2,6 +2,8 @@
 
 Official implementation of **"Parameterization-Based Dataset Distillation for 3D Point Cloud Classification"** (ICLR 2026).
 
+[[Paper]](https://iclr.cc/virtual/2026/poster/10009568)
+
 We synthesize a small set of point clouds that faithfully preserves the information of a full training set, enabling networks trained only on the distilled data to match or approach full-data accuracy.
 
 ---
