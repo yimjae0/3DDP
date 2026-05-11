@@ -1,6 +1,6 @@
 # 3DDP
 
-Official implementation of **"Parameterization-Based Dataset Distillation for 3D Point Cloud Classification"** (ICLR 2026).
+Official implementation of **"Parameterization-Based Dataset Distillation of 3D Point Clouds through Learnable Shape Morphing"** (ICLR 2026).
 
 [[Paper]](https://iclr.cc/virtual/2026/poster/10009568)
 
@@ -127,7 +127,7 @@ Pass via `--model`.
 
 ```bibtex
 @inproceedings{pointdistill2026,
-  title     = {Parameterization-Based Dataset Distillation for 3D Point Cloud Classification},
+  title     = {Parameterization-Based Dataset Distillation of 3D Point Clouds through Learnable Shape Morphing},
   booktitle = {ICLR},
   year      = {2026},
 }
