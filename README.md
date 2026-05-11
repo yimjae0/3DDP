@@ -1,4 +1,4 @@
-# Point-Distill
+# 3DDP
 
 Official implementation of **"Parameterization-Based Dataset Distillation for 3D Point Cloud Classification"** (ICLR 2026).
 
